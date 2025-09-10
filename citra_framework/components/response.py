@@ -6,6 +6,19 @@ class Response:
     Represents an HTTP response for `Citra` framework.
     '''
     
+    STATUS_REASONS = {
+        200: "OK",
+        201: "Created",
+        204: "No Content",
+        301: "Moved Permanently",
+        302: "Found",
+        400: "Bad Request",
+        401: "Unauthorized",
+        403: "Forbidden",
+        404: "Not Found",
+        500: "Internal Server Error",
+    }
+    
     def __init__(
         self,
         body='',
@@ -35,26 +48,32 @@ class Response:
         # --- Detects if the content is string bytes or dictionary. ---
         if isinstance(self.body, dict):
             body_bytes = json.dumps(self.body).encode()
-            self.headers.setdefault("Content-Type", "application/json")
+            self.headers.setdefault("Content-Type", "application/json; charset=utf-8")
         elif isinstance(self.body, str):
             body_bytes = self.body.encode()
-            self.headers.setdefault("Content-Type", "text/html")
+            self.headers.setdefault("Content-Type", "text/html; charset=utf-8")
         elif isinstance(self.body, (bytes, bytearray)):
             body_bytes = self.body
         elif self.body is None:
             body_bytes = b''
         else:
-            body_bytes = self.body
+            body_bytes = str(self.body).encode()
         
+        self.headers['Content-Length'] = str(len(body_bytes))
+        
+        reason = self.STATUS_REASONS.get(self.status_code, 'Unknown')
+        status_line = f'HTTP/1.1 {self.status_code} {reason}\r\n'
+        
+        # --- build headers ---
         headers = ''.join(f'{key}: {value}\r\n' for key, value in self.headers.items())
         
-        response = (
-            f'HTTP/1.1 {self.status_code} OK\r\n'
-            f'Content-Length: {len(body_bytes)}\r\n'
-            f'{headers}\r\n'
-        ).encode() + body_bytes
+        #response = (
+        #    f'HTTP/1.1 {self.status_code} OK\r\n'
+        #    f'Content-Length: {len(body_bytes)}\r\n'
+        #    f'{headers}\r\n'
+        #).encode() + body_bytes
         
-        return response
+        return (status_line + headers + '\r\n').encode() + body_bytes
     
     # --- Optional JSON format text ---
     @staticmethod
@@ -69,4 +88,4 @@ class Response:
         '''
         
         content = json.dumps(data)
-        return Response(content, status_code, {'Content-Type': 'application/json'})
+        return Response(content, status_code, {'Content-Type': 'application/json; charset=utf-8'})

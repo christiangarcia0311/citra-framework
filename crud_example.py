@@ -12,7 +12,6 @@ core = Citra(
 )
 
 # --- GET FORM
-@profile
 async def form_page(request):
     return core.templates.display('form.html')
 

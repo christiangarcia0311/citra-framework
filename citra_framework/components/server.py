@@ -77,25 +77,47 @@ class Server:
         '''
         
         try:
-            data = await reader.read(1024)
             
-            if not data:
-                return
+            while True:
+                data = await reader.read(1024)
+                
+                if not data:
+                    return
 
-            request = Request.parse(data)
-            response = await self.app.router.dispatch(request, self.app)
-            self.app.logger.info(f'{request.method} {request.path} {response.status_code}')
-            writer.write(response.build())
-            await writer.drain()
+                request = Request.parse(data)
+                response = await self.app.router.dispatch(request, self.app)
+                
+                if isinstance(response, str):
+                    response = Response(response, status_code=500)
+                
+                response.headers.setdefault('Connection', 'keep-alive')
+                
+                self.app.logger.info(f'{request.method} {request.path} {response.status_code}')
+                writer.write(response.build())
+                await writer.drain()
+                
+                if request.headers.get('Connection', '').lower() == 'close':
+                    break
             
         except Exception as e:
-            response = self.app.debugger.handle_exception(e)
-            writer.write(response.build())
+            error_response = self.app.debugger.handle_exception(e)
+            
+            if isinstance(error_response, str):
+                error_response = Response(error_response, status_code=500)
+            
+            error_response.headers['Connection'] = 'close'
+            writer.write(error_response.build())
             await writer.drain()
             
         finally:
             writer.close()
-            await writer.wait_closed()
+            
+            try:
+                await writer.wait_closed()
+            except ConnectionResetError:
+                self.app.logger.debug('Connection closed by client before shutdown.')
+            except Exception as e:
+                self.app.logger.error(f'Error during client shutdown: {e}')
     
     def serve(self):
         
