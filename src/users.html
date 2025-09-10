@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users</title>
+</head>
+<body>
+    <h1>User List</h1>
+        <ul>
+
+            $ if _flashes $
+            <ul>
+                $ for msg in _flashes $
+                    <p class="% msg['category'] %"> % msg['message'] %</p>
+                $ endfor $
+            </ul>
+            $ endif $
+
+            $ for user in users $
+            
+                    <li>% user['name'] % - % user['age'] %
+                        <a href="/update_form/% user ['age'] %" style="color: green;">[Update]</a>
+                        <a href="/delete/% user['age'] %" style="color:red;">[Delete]</a>
+                    </li>
+        
+            $ endfor $
+        </ul>
+        <br>
+        <a href="/">Home</a>
+    </h1>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User</title>
+</head>
+<body>
+    <form action="/update/% user['age'] %" method="post">
+        <input type="text" name="name" placeholder="Enter your name" value="% user['name'] %">
+        <br>
+        <input type="number" name="age" placeholder="Enter your age" value="% user['age'] %">
+        <br>
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>
