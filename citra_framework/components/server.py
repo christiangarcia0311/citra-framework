@@ -106,19 +106,26 @@ class Server:
                 error_response = Response(error_response, status_code=500)
             
             error_response.headers['Connection'] = 'close'
-            writer.write(error_response.build())
-            await writer.drain()
-            
-        finally:
-            writer.close()
             
             try:
+                writer.write(error_response.build())
+                await writer.drain()
+            except Exception:
+                pass
+            
+        finally:
+            try:
+                writer.close()
                 await writer.wait_closed()
-            except ConnectionResetError:
-                self.app.logger.debug('Connection closed by client before shutdown.')
+                
+                try:
+                    await writer.wait_closed()
+                except (ConnectionResetError, OSError):
+                    self.app.logger.debug('Connection closed by client before shutdown.')
+                except Exception as e:
+                    self.app.logger.error(f'Error during client shutdown: {e}')
             except Exception as e:
-                self.app.logger.error(f'Error during client shutdown: {e}')
-    
+                self.app.logger.error(f'Error during client cleanup: {e}')
     def serve(self):
         
         '''
