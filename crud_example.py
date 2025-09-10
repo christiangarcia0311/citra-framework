@@ -1,7 +1,7 @@
 from citra_framework.core import Citra, Response
 
 core = Citra(
-    debug=False,
+    debug=True,
     enable_db=True,
     config_db={
         'hostname': 'localhost',
