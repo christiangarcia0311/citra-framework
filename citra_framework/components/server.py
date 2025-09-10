@@ -129,7 +129,7 @@ class Server:
     def serve(self):
         
         '''
-        Start the HTTP server and keep it running.
+        Start the HTTP server and keep it running for dev.
         
         This method creates an asyncio-based TCP server bound to the configured
         host and port. It runs the event loop until the server is terminated (e.g., via CTRL+C). 
