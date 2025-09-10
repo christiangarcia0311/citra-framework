@@ -41,7 +41,7 @@ class Debugger:
             if self.logger:
                 self.logger.error(f'Debug Exception:\n{tracebacks}')
             
-            return InternalServerError(details=tracebacks).display()
+            return InternalServerError(details=tracebacks, debug=True).display()
             
             # --- Previous solution ---
             # error_body = f'<h1>500 Internal Server Error</h1><pre>{tracebacks}</pre>'
@@ -58,4 +58,4 @@ class Debugger:
             #return Response(error_body, 500, {"Content-Type": "text/html"})
             #return Response(error_page, 500, {'Content-Tyoe': 'text/html'})
         
-            return InternalServerError(details=f'Something wrong on our side. Please try again later.').display()
+            return InternalServerError(details=f'Something wrong on our side. Please try again later.', debug=False).display()

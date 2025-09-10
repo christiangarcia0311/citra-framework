@@ -1,7 +1,7 @@
 from citra_framework.core import Citra, Response
 
 core = Citra(
-    debug=True,
+    debug=False,
     enable_db=True,
     config_db={
         'hostname': 'localhost',
@@ -12,6 +12,7 @@ core = Citra(
 )
 
 # --- GET FORM
+@profile
 async def form_page(request):
     return core.templates.display('form.html')
 

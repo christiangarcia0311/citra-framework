@@ -119,12 +119,14 @@ class Router:
             app (Citra): app instance.
         '''
         
-        for regex, handler, method in self.routes:
+        for regex, handler, method, cors in self.routes:
             if request.method == method:
                 match = regex.match(request.path)
                 if match:
                     kwargs = match.groupdict()
-                    request.cors
+                    # request.cors
+                    if cors:
+                        request.headers['Access-Control-Allow-Origin'] = '*'
                     return await handler(request, **kwargs)
         
-        return NotFoundError(details=f'Path {request.path} not found.').display()
+        return NotFoundError(details=f'Method: {request.method} Request Path: {request.path} not found.', debug=app.debug).display()
