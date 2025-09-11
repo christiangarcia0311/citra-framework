@@ -18,7 +18,7 @@ class CorsMiddleware(BaseMiddleware):
         allow_methods (list[str]): allowed HTTP methods permitted (default: GET, POST, PUT< DELETE, OPTIONS).
         allow_headers (list[str]): allowed request headers (default: Content-Type, Authorization).
     '''
-    
+ 
     def __init__(
         self,
         allow_origin='*',

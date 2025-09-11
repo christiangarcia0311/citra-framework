@@ -124,7 +124,7 @@ class Router:
                 match = regex.match(request.path)
                 if match:
                     kwargs = match.groupdict()
-                    # request.cors
+                    request.cors = cors
                     if cors:
                         request.headers['Access-Control-Allow-Origin'] = '*'
                     return await handler(request, **kwargs)
